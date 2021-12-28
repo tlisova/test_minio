@@ -5,21 +5,19 @@ import re
 
 
 def main():
-
     # чтобы отображались все колонки DataFrame
     pd.set_option('display.max_columns', None)
 
-    #сайт, логин, пароль, безопасность
-    client = Minio("127.0.0.1:9001", access_key="tlisova", secret_key="tlisova98", secure=False)
+    # сайт, логин, пароль, безопасность
+    client = Minio("127.0.0.1:9000", access_key="tlisova", secret_key="tlisova98", secure=False, region="ru")
 
-    #корзина и объект
+    # корзина и объект
     client.fget_object("test-bucket-201170", "201170.csv", "./test_csv.csv")
 
-    #работа с файлом
+    # работа с файлом
 
-    #with open("201170.csv", encoding="cp1251") as file:
+    # with open("201170.csv", encoding="cp1251") as file:
     with open("test_csv.csv", encoding="cp1251") as file:
-
         csvframe = pd.read_csv(file, delimiter=';', header=None)
 
         # изменение поля Даты
@@ -41,11 +39,14 @@ def main():
         res = pd.concat([csvframe, s3, s9], axis=1)
 
         # какие колонки в каком порядке будем сохранять
-        res = res[[0, 1, 2, 'ooo', 'name', 4, 5, 6, 7, 8, 'g1', 'g2']]
-
+        res = res[[0, 2, 'ooo', 'name', 4, 5, 6, 7, 8, 'g1', 'g2']]
         print(res)
 
-        res.to_csv('new_201170.csv', index=False)
+        # сохранили в файл
+        res.to_csv('new_201170.csv', sep=';', index=False)
+
+        # переносим файл в minio
+        client.fput_object("test-bucket-201170", "new_201170.csv", "new_201170.csv")
 
 
 if __name__ == '__main__':
