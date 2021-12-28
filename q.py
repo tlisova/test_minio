@@ -24,16 +24,19 @@ def main():
         csvframe[0] = csvframe[0].map(lambda x: str(x)[-10:])
 
         # разбиение столбца
-        csvframe[3] = csvframe[3].str.split(' ', 1, expand=True).values.tolist()
-        s3 = pd.DataFrame(csvframe[3].values.tolist(), columns=['ooo', 'name'])
+        #csvframe[3] = csvframe[3].str.split(' ', 1, expand=True).values.tolist()
+        #s3 = pd.DataFrame(csvframe[3].values.tolist(), columns=['ooo', 'name'])
+        s3 = pd.DataFrame(csvframe[3].str.split(' ', 1, expand=True).values.tolist(), columns=['ooo', 'name'])
+
         # print(s3)
 
         # привести к числовому значению столбец
         csvframe[8] = pd.to_numeric(csvframe[8].apply(lambda x: re.sub(',', '.', str(x).replace(' ', ''))))
 
         # разбиение последнего столбца по годам
-        csvframe[9] = csvframe[9].str.split('-', expand=True).values.tolist()
-        s9 = pd.DataFrame(csvframe[9].values.tolist(), columns=['g1', 'g2'])
+        #csvframe[9] = csvframe[9].str.split('-', expand=True).values.tolist()
+        #s9 = pd.DataFrame(csvframe[9].values.tolist(), columns=['g1', 'g2'])
+        s9 = pd.DataFrame(csvframe[9].str.split('-', expand=True).values.tolist(), columns=['g1', 'g2'])
 
         # соединяем результаты
         res = pd.concat([csvframe, s3, s9], axis=1)
